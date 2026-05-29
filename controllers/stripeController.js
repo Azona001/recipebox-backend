@@ -47,6 +47,9 @@ const handleWebhook = async (req, res) => {
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
 
+  console.log("Event type:", event.type); //
+  console.log("Payment status:", event.data.object.payment_status);
+
   //handle the event
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
