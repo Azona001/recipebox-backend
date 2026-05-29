@@ -10,13 +10,6 @@ const { connectDb } = require("./config/database");
 //const { User, Recipe, Category } = require("./models/index");
 
 const app = express();
-app.post(
-  "/api/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  handleWebhook,
-);
-app.use(express.urlencoded({ limit: "10mb", extended: false }));
-app.use(express.json());
 
 const corsOptions = {
   origin:
@@ -27,6 +20,15 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.post(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  handleWebhook,
+);
+app.use(express.urlencoded({ limit: "10mb", extended: false }));
+app.use(express.json());
+
 connectDb();
 
 app.use("/api/recipes", router);
