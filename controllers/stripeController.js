@@ -34,37 +34,37 @@ const createCheckoutSession = async (req, res) => {
 };
 
 const handleWebhook = async (req, res) => {
-  console.log("webhook received!");
+  console.log("🔔 Webhook received!");
+
   const sig = req.headers["stripe-signature"];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  console.log("Webhook secret exists:", !!webhookSecret); // ← add
+  console.log("Signature exists:", !!sig); // ← add
 
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-  } catch (error) {
-    console.error("Webhook signature verification failed:", error.message);
-    return res.status(400).send(`Webhook Error: ${error.message}`);
+    console.log("✅ Event constructed:", event.type); // ← add
+  } catch (err) {
+    console.error("❌ Webhook verification failed:", err.message); // ← add
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  console.log("Event type:", event.type); //
-  console.log("Payment status:", event.data.object.payment_status);
-
-  //handle the event
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+    console.log("Payment status:", session.payment_status); // ← add
+    console.log("Client reference ID:", session.client_reference_id); // ← add
+
     const userId = session.client_reference_id;
 
-    //update user to pro
     const { User } = require("../models");
     await User.update({ plan: "pro" }, { where: { userId } });
-
-    console.log(`User ${userId} upgraded to pro!`);
+    console.log(`✅ User ${userId} upgraded to pro!`);
   }
 
-  res.json({
-    received: true,
-  });
+  res.json({ received: true });
 };
 
 module.exports = { createCheckoutSession, handleWebhook };
