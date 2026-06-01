@@ -7,34 +7,30 @@ const sanitizeHtml = require("sanitize-html");
 const getRecipes = async (req, res) => {
   // get user id from req
   const user = req.user;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 6;
+  const offset = (page - 1) * limit;
   try {
     //user found,
     // select * from recipes where recipes.userId = auth0Id limit 10 order by createdAt DESC;
-    const recipes = await Recipe.findAll({
-      limit: 10,
+    const { count, rows } = await Recipe.findAndCountAll({
+      limit,
       where: {
         userId: user.userId,
       },
       order: [["createdAt", "DESC"]],
+      offset,
       include: [{ model: Category }],
     });
-
-    //if no  recipes, return empty array because recipe never returns null
-    if (recipes.length === 0) {
-      return res.json({
-        success: true,
-        msg: "No recipes yet",
-        recipes: [],
-        userPlan: user.plan,
-      });
-    }
 
     //send back recipes to client
     res.json({
       success: true,
       msg: "success",
-      recipes,
+      recipes: rows,
       userPlan: user.plan,
+      hasMore: offset + rows.length < count,
+      total: count,
     });
   } catch (error) {
     console.error(error.message);
