@@ -1,5 +1,6 @@
 //controllers/recipeController.js
 
+const { Op } = require("sequelize");
 const { Recipe, Category } = require("../models/index");
 const sanitizeHtml = require("sanitize-html");
 
@@ -10,14 +11,18 @@ const getRecipes = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 6;
   const offset = (page - 1) * limit;
+  const search = req.query.search || "";
+
+  const whereClause = {
+    userId: user.userId,
+    ...(search && { title: { [Op.like]: `%${search}%` } }),
+  };
   try {
     //user found,
     // select * from recipes where recipes.userId = auth0Id limit 10 order by createdAt DESC;
     const { count, rows } = await Recipe.findAndCountAll({
       limit,
-      where: {
-        userId: user.userId,
-      },
+      where: whereClause,
       order: [["createdAt", "DESC"]],
       offset,
       include: [{ model: Category }],
