@@ -50,6 +50,21 @@ const Recipe = sequelize.define(
       defaultValue:
         "https://res.cloudinary.com/dtysy7oyr/image/upload/q_auto/f_auto/v1779775245/blank_dnr220.jpg",
     },
+    isShared: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    shareId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    isFavorite: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
+    },
   },
   { timestamps: true },
 );
