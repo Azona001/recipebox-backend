@@ -5,9 +5,29 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
     "dev": "nodemon server.js",
     "lint": "eslint . --ext .js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "verbose": true,
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "!**/node_modules/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 75,
+        "functions": 80,
+        "lines": 80
+      }
+    }
   },
   "keywords": [],
   "author": "",
@@ -30,7 +50,9 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.4.0",
+    "eslint-plugin-jest": "^29.15.2",
     "globals": "^17.6.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "sanitize-html": "^2.17.4"
   }
