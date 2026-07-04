@@ -6,15 +6,16 @@ const {
   createCategory,
   deleteCategory,
 } = require("../controllers/categoryController");
+const asyncHandler = require("../middleware/asyncHandler");
 
 const router = express.Router();
 router.use(verifyToken);
 router.use(attachUser);
 
 // /api/categories
-router
-  .get("/", getCategories)
-  .post("/", createCategory)
-  .delete("/:id", deleteCategory);
+
+router.get("/", asyncHandler(getCategories));
+router.post("/", asyncHandler(createCategory));
+router.delete("/:id", asyncHandler(deleteCategory));
 
 module.exports = router;

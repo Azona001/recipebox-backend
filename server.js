@@ -1,4 +1,3 @@
-//server.js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -7,14 +6,13 @@ const categoryRouter = require("./routes/categories");
 const stripeRouter = require("./routes/stripe");
 const { handleWebhook } = require("./controllers/stripeController");
 const { connectDb } = require("./config/database");
-//const { User, Recipe, Category } = require("./models/index");
 
 const app = express();
 
 const corsOptions = {
   origin:
     process.env.FRONTEND_URL ||
-    `http://localhost:${process.env.FRONTEND_PORT ? process.env.FRONTEND_PORT : 3000}`,
+    `http://localhost:${process.env.FRONTEND_PORT || 3000}`,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
@@ -35,14 +33,23 @@ app.use("/api/recipes", router);
 app.use("/api/categories", categoryRouter);
 app.use("/api/stripe", stripeRouter);
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    msg: "Hello World!",
-  });
+app.get("/", (req, res) => res.json({ success: true, msg: "Hello World!" }));
+
+// ── Central error handler ──────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  // Log unexpected errors only (not 404s, 403s etc.)
+  if (!err.isOperational) {
+    console.error(`[${req.method}] ${req.path}`, err);
+  }
+
+  const status = err.status || 500;
+  const msg = err.isOperational
+    ? err.message // safe to expose: you wrote this message
+    : "Internal server error"; // hide unexpected error details from client
+
+  res.status(status).json({ success: false, msg });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log("App listening on port:", PORT);
-});
+app.listen(PORT, () => console.log("App listening on port:", PORT));

@@ -29,7 +29,7 @@ const createCheckoutSession = async (req, res) => {
     res.json({ url: session.url });
   } catch (error) {
     console.log(error);
-    res.sttatus(500).json({ success: false, msg: "Server Error" });
+    res.status(500).json({ success: false, msg: "Server Error" });
   }
 };
 
