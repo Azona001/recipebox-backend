@@ -2,7 +2,7 @@
 
 REST API for RecipeBox, a full stack recipe management app. Built with **Node.js**, **Express**, and **MySQL** (via Sequelize), deployed on **Railway**.
 
-**Frontend repo/folder:** [Link to frontend]
+**Frontend repo/folder:** https://github.com/Azona001/recipebox-frontend
 
 ## Features
 
